@@ -207,7 +207,7 @@ Check ingestion history:
 select * 
 from table(information_schema.copy_history(
   table_name=>'orders_data_lz',
-  start_time=>dateadd(minutes, -10, current_timestamp())
+  start_time=>dateadd(hours, -1, current_timestamp())
 ));
 ```
 
