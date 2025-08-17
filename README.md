@@ -208,5 +208,3 @@ select * from orders_data_lz;
 
 ---
 
-⚡ Would you like me to also **draw an architecture diagram (GCS → Pub/Sub → Snowflake)** and include it in the README so it’s easier to visualize?
-
