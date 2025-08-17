@@ -1,18 +1,65 @@
-# 🚀 Snowpipe GCS → Snowflake Auto-ingestion Demo
+# 📌 Snowpipe in Snowflake (Event-Driven Ingestion)
 
-This project demonstrates how to **automatically ingest CSV data** from a **Google Cloud Storage (GCS) bucket** into **Snowflake** using **Snowpipe** and **Pub/Sub notifications**.
+This project demonstrates how to build an **event-driven data ingestion pipeline** from **Google Cloud Storage (GCS)** to **Snowflake** using **Snowpipe** and **Google Pub/Sub**.
+
+The pipeline automatically loads new files dropped into a GCS bucket into a Snowflake target table — without manual triggers.
+
+
+![Snowpipe_Architecture](Architecture-Snowpipe.jpg)
+
+---
+## ⚙️ Flow
+
+1. **Upload Files to GCS**
+
+   * Raw CSV files (e.g., `orders_20231210.csv`) are uploaded into a GCS bucket.
+
+2. **Object Notifications**
+
+   * GCS is configured to send **object create events** to a **Pub/Sub topic** whenever a new file is uploaded.
+
+3. **Pub/Sub → Snowflake**
+
+   * A **subscription** is created on the topic.
+   * Snowflake is connected to this subscription via a **Notification Integration**.
+   * Proper IAM permissions are granted so Snowflake’s service account can pull messages.
+
+4. **Storage Integration**
+
+   * Snowflake uses a **Storage Integration** to securely access the GCS bucket.
+   * This integration is mapped to a service account in GCP with `storage.objectViewer` permissions.
+
+5. **External Stage**
+
+   * An **External Stage** in Snowflake points to the GCS bucket path.
+
+6. **Snowpipe**
+
+   * Snowpipe is configured on the stage with:
+
+     * File format definition (CSV, no header, delimiter `,`).
+     * Notification integration (linked to Pub/Sub).
+   * It listens for new file notifications.
+
+7. **Automatic Data Load**
+
+   * When a file arrives:
+
+     * GCS emits event → Pub/Sub → Snowflake Notification Integration.
+     * Snowpipe auto-runs a `COPY INTO` command.
+     * Data lands in the **target table** (`ORDERS_DATA_LZ`).
 
 ---
 
-## 📂 Project Structure
+## 🔑 Components
 
-* **GCS Bucket** → Raw CSV files (new files trigger notifications).
-* **Google Pub/Sub Topic & Subscription** → Event system that notifies Snowflake when a new file arrives.
-* **Snowflake Storage Integration** → Securely connects Snowflake to GCS.
-* **Snowflake Stage** → Points to the GCS bucket where files are stored.
-* **Snowflake Notification Integration** → Connects to Pub/Sub subscription.
-* **Snowpipe** → Automatically ingests files into a target Snowflake table.
-* **Target Table** → `ORDERS_DATA_LZ` stores ingested data.
+* **Google Cloud Storage (GCS)** → Raw file storage.
+* **Pub/Sub** → Event bus for file notifications.
+* **Snowflake Storage Integration** → Secure bucket access.
+* **Snowflake Notification Integration** → Connects Pub/Sub subscription to Snowflake.
+* **External Stage** → Reference to GCS bucket inside Snowflake.
+* **Snowpipe** → Handles event-driven ingestion.
+* **Target Table** → Final landing zone in Snowflake.
 
 ---
 
