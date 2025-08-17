@@ -1,4 +1,4 @@
-# 📌 Snowpipe in Snowflake (Event-Driven Ingestion)
+# 📌 Snowpipe in Snowflake❄️ (Event-Driven Ingestion)
 
 This project demonstrates how to build an **event-driven data ingestion pipeline** from **Google Cloud Storage (GCS)** to **Snowflake** using **Snowpipe** and **Google Pub/Sub**.
 
@@ -252,6 +252,4 @@ select * from orders_data_lz;
 * Add monitoring alerts for failed loads.
 * Automate setup with Terraform or scripts.
 * Add error handling (redirect bad files to error bucket).
-
----
 
